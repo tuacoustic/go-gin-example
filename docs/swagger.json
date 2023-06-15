@@ -1,0 +1,20 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "An example service in Go using Gin framework.",
+        "title": "GO GIN EXAMPLE",
+        "contact": {
+            "name": "Tu Acoustic",
+            "url": "https://tudinhacoustic.github.io/portfolio/",
+            "email": "mailto:tudinhacoustic@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.1"
+    },
+    "host": "localhost:3030",
+    "basePath": "/api/v1",
+    "paths": {}
+}

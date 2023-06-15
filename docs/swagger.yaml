@@ -1,0 +1,15 @@
+basePath: /api/v1
+host: localhost:3030
+info:
+  contact:
+    email: mailto:tudinhacoustic@gmail.com
+    name: Tu Acoustic
+    url: https://tudinhacoustic.github.io/portfolio/
+  description: An example service in Go using Gin framework.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: GO GIN EXAMPLE
+  version: 1.0.1
+paths: {}
+swagger: "2.0"
