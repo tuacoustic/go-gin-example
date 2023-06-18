@@ -45,6 +45,7 @@ type Database struct {
 	Password    string
 	Host        string
 	Name        string
+	Port        string
 	TablePrefix string
 }
 

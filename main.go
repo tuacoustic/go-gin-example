@@ -7,7 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/tuacoustic/go-gin-example/databases"
 	"github.com/tuacoustic/go-gin-example/routers"
+	"github.com/tuacoustic/go-gin-example/utils/console"
 	"github.com/tuacoustic/go-gin-example/utils/setting"
 )
 
@@ -19,20 +21,25 @@ func init() {
 	// util.Setup()
 }
 
-// @title           GO GIN EXAMPLE
-// @version         1.0.1
-// @description     An example service in Go using Gin framework.
+//	@title			GO GIN EXAMPLE
+//	@version		1.0.1
+//	@description	An example service in Go using Gin framework.
 
-// @contact.name   Tu Acoustic
-// @contact.url    https://tudinhacoustic.github.io/portfolio/
-// @contact.email  mailto:tudinhacoustic@gmail.com
+//	@contact.name	Tu Acoustic
+//	@contact.url	https://tudinhacoustic.github.io/portfolio/
+//	@contact.email	mailto:tudinhacoustic@gmail.com
 
-// @license.name  Apache 2.0
-// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host      localhost:3030
-// @BasePath  /api/v1
+//	@host		localhost:3030
+//	@BasePath	/api/v1
 func main() {
+	// Auto generate model schema
+	status := databases.MysqlAuto()
+	if status == true {
+		console.Info("Connected to Mysql Successful")
+	}
 	gin.SetMode(setting.ServerSetting.RunMode)
 
 	routersInit := routers.InitRouter()

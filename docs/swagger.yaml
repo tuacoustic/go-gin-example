@@ -1,4 +1,49 @@
 basePath: /api/v1
+definitions:
+  entities.Address:
+    properties:
+      city:
+        type: string
+      country:
+        type: string
+      street:
+        type: string
+    type: object
+  entities.User:
+    properties:
+      address:
+        $ref: '#/definitions/entities.Address'
+      avatar:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      password:
+        type: string
+      phone:
+        type: string
+      updated_at:
+        type: string
+      uuid:
+        description: UUID      uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();not
+          null" json:"uuid"` Only use for postgresdb
+        type: string
+    type: object
+  users.badRequestResponse:
+    properties:
+      body:
+        description: 'in: body'
+        properties:
+          message:
+            description: Error message
+            type: string
+        type: object
+    type: object
 host: localhost:3030
 info:
   contact:
@@ -11,5 +56,30 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: GO GIN EXAMPLE
   version: 1.0.1
-paths: {}
+paths:
+  /api/v1/users/register:
+    post:
+      consumes:
+      - application/json
+      description: register new user
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/users.badRequestResponse'
+      summary: Show an account
+      tags:
+      - users
 swagger: "2.0"
