@@ -17,7 +17,7 @@ type User struct {
 	Id uint64 `gorm:"column:id;size:11;primary_key;auto_increment" json:"id"`
 	// UUID      uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();not null" json:"uuid"` Only use for postgresdb
 	UUID      uuid.UUID `gorm:"type:string;default:(UUID());not null" json:"uuid"`
-	Email     string    `gorm:"column:email;size:100;not null;unique;index:idx_email" json:"email"`
+	Email     string    `gorm:"column:email;size:255;not null;unique;index:idx_email" json:"email"`
 	Phone     string    `gorm:"column:phone;size:30;not null;unique;index:idx_phone" json:"phone"`
 	Avatar    string    `gorm:"column:avatar;size:255" json:"avatar"`
 	Password  string    `gorm:"column:password;size:100;not null"`

@@ -4,12 +4,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	_ "github.com/tuacoustic/go-gin-example/docs"
 	"github.com/tuacoustic/go-gin-example/packages/users"
+	"github.com/tuacoustic/go-gin-example/utils/validate"
 )
 
 func HomePage(c *gin.Context) {
@@ -23,12 +23,7 @@ func HomePage(c *gin.Context) {
 	})
 }
 
-var validate *validator.Validate
-
 func InitRouter() *gin.Engine {
-	// Init Validator
-	validate = validator.New()
-
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
@@ -37,7 +32,7 @@ func InitRouter() *gin.Engine {
 	r.GET("/", HomePage)
 
 	// Interceptor
-	// r.Use(interceptor.InterceptorResponse())
+	r.Use(validate.Validator)
 	apiv1 := r.Group("/api/v1")
 	{
 		// User Routes

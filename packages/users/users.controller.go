@@ -1,11 +1,11 @@
 package users
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tuacoustic/go-gin-example/databases"
+	"github.com/tuacoustic/go-gin-example/utils/app"
 	"github.com/tuacoustic/go-gin-example/utils/console"
 	"github.com/tuacoustic/go-gin-example/utils/validate"
 )
@@ -22,7 +22,7 @@ import (
 // @Param        avatar   path      string  true  "avatar"
 // @Param        password   path      string  true  "password"
 // @Success      200  {object}  entities.User
-// @Failure      400  {object}  badRequestResponse
+// @Failure      400  {object}  resp.ResponseErrorData
 // @Router       /api/v1/users/register [post]
 func Create(c *gin.Context) {
 	db, err := databases.MysqlConnect()
@@ -34,26 +34,22 @@ func Create(c *gin.Context) {
 	// Body
 	var userInput UsersDto
 	if err := c.ShouldBind(&userInput); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		// c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		validate.HandleValidationErrors(c, err)
 		return
 	}
 
-	// Validation
-	if err := validate.Validate().Struct(userInput); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
 	func(userRepo UsersRepoIF) {
 		data, err := userRepo.Create(userInput)
 		if err != nil {
 			return
 		}
 		console.Info(data)
-		return
 	}(repo)
 }
 
 func GetAll(c *gin.Context) {
+	appG := app.Gin{C: c}
 	db, err := databases.MysqlConnect()
 	if err != nil {
 		return
@@ -61,23 +57,19 @@ func GetAll(c *gin.Context) {
 	repo := UsersRepo(db)
 
 	// Query String
-	queryParams := c.Request.URL.Query()
-	fmt.Println(queryParams)
+	var queryParams GetUsersDto
+
+	// Bind query parameters to the GetUsersDto struct
+	if err := c.ShouldBindQuery(&queryParams); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	func(userRepo UsersRepoIF) {
-		data, err := userRepo.GetAll(queryParams)
+		items, err := userRepo.GetAll(queryParams)
 		if err != nil {
 			return
 		}
-		console.Info(data)
-		return
+		appG.Response(http.StatusOK, items)
 	}(repo)
-}
-
-// swagger:response badRequestResponse
-type badRequestResponse struct {
-	// in: body
-	Body struct {
-		// Error message
-		Message string `json:"message"`
-	} `json:"body"`
 }
