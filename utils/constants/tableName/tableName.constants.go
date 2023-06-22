@@ -1,7 +1,7 @@
 package tablename
 
-func TableName() TableNameStructs {
-	return TableNameStructs{
+func TableName() TableNameStruct {
+	return TableNameStruct{
 		Users: "users",
 	}
 }

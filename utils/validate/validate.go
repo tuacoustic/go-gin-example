@@ -9,7 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/tuacoustic/go-gin-example/utils/app"
 	"github.com/tuacoustic/go-gin-example/utils/common"
-	"github.com/tuacoustic/go-gin-example/utils/constants/validateConstants"
+	"github.com/tuacoustic/go-gin-example/utils/constants/errorConstants"
 )
 
 var (
@@ -23,15 +23,6 @@ func Validator(c *gin.Context) {
 	c.Next()
 }
 
-func detailValidation(field string, value string, location string, description string) app.DetailValidation {
-	return app.DetailValidation{
-		Field:       field,
-		Value:       value,
-		Location:    location,
-		Description: description,
-	}
-}
-
 func HandleValidationErrors(c *gin.Context, err error) {
 	appG := app.Gin{C: c}
 	if _, ok := err.(*validator.InvalidValidationError); ok {
@@ -40,36 +31,37 @@ func HandleValidationErrors(c *gin.Context, err error) {
 	}
 
 	errors := err.(validator.ValidationErrors)
-	// validationErrors := make(map[string]string)
 	var message string
-	var details app.DetailValidation
+	var details []app.Detail
 	for _, e := range errors {
 		// var message string
 		switch e.Tag() {
 		case "required":
 			message = fmt.Sprintf("The '%s' field is required", common.CamelToSnake(e.Field()))
-			details = detailValidation(common.CamelToSnake(e.Field()), "", e.Field(), "Field is required")
+			details = append(details, errorConstants.CommonDetailError(common.CamelToSnake(e.Field()), e.Value(), errorConstants.CommonBodyLocationError(), message))
 		case "email":
 			message = fmt.Sprintf("The '%s' must be a valid email, value: %s", common.CamelToSnake(e.Field()), e.Value())
-			details = detailValidation(common.CamelToSnake(e.Field()), "", e.Field(), "Field is required")
+			details = append(details, errorConstants.CommonDetailError(common.CamelToSnake(e.Field()), e.Value(), errorConstants.CommonBodyLocationError(), message))
 		case "min":
 			message = fmt.Sprintf("The '%s' must be at least %s characters long", common.CamelToSnake(e.Field()), e.Param())
-			details = detailValidation(common.CamelToSnake(e.Field()), "", e.Field(), "Field is required")
+			details = append(details, errorConstants.CommonDetailError(common.CamelToSnake(e.Field()), e.Value(), errorConstants.CommonBodyLocationError(), message))
 		case "len":
 			message = fmt.Sprintf("The '%s' must be %s characters long", common.CamelToSnake(e.Field()), e.Param())
-			details = detailValidation(common.CamelToSnake(e.Field()), "", e.Field(), "Field is required")
+			details = append(details, errorConstants.CommonDetailError(common.CamelToSnake(e.Field()), e.Value(), errorConstants.CommonBodyLocationError(), message))
+		case "gte":
+			count := common.CountInterface(e.Value())
+			message = fmt.Sprintf("The '%s' must be larger than %d", common.CamelToSnake(e.Field()), count)
+			details = append(details, errorConstants.CommonDetailError(common.CamelToSnake(e.Field()), e.Value(), errorConstants.CommonBodyLocationError(), message))
+		case "lte":
+			count := common.CountInterface(e.Value())
+			message = fmt.Sprintf("The '%s' must be smaller than %d", common.CamelToSnake(e.Field()), count)
+			details = append(details, errorConstants.CommonDetailError(common.CamelToSnake(e.Field()), e.Value(), errorConstants.CommonBodyLocationError(), message))
 		default:
 			message = e.Translate(trans)
-			details = detailValidation(common.CamelToSnake(e.Field()), "", e.Field(), "Field is required")
+			details = append(details, errorConstants.CommonDetailError(common.CamelToSnake(e.Field()), e.Value(), errorConstants.CommonBodyLocationError(), message))
 		}
-		// validationErrors[common.CamelToSnake(e.Field())] = message
 	}
-	// c.JSON(http.StatusBadRequest, gin.H{"errors": message})
-	// c.JSON(http.StatusBadRequest, gin.H{"errors": validationErrors})
-	// details := app.DetailValidation{
-	// 	Field:
-	// }
-	appG.ErrorResponse(http.StatusBadRequest, validateConstants.Validate().ErrorName, message, details)
+	appG.ErrorResponse(http.StatusBadRequest, errorConstants.Validate().ErrorName, errorConstants.Validate().Message, details)
 }
 
 // {

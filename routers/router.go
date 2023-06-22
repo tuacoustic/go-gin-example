@@ -38,6 +38,7 @@ func InitRouter() *gin.Engine {
 		// User Routes
 		apiv1.POST("/users/register", users.Create)
 		apiv1.GET("/users/get-all", users.GetAll)
+		apiv1.PUT("/users/:id/update", users.Update)
 	}
 
 	// Swagger

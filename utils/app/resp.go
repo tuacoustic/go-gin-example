@@ -2,14 +2,15 @@ package app
 
 import "net/http"
 
-func (g *Gin) Response(httpCode int, data interface{}) {
+func (g *Gin) Response(httpCode int, data interface{}, pagination Pagination) {
 	switch httpCode {
 	case http.StatusOK: // Get List ~> 200
 		g.C.JSON(httpCode, ResponseGetListData{
 			Items: data,
 			// Links:      links,
-			TotalItems: 1,
-			TotalPages: 1,
+			CurrentPage: pagination.CurrentPage,
+			TotalItems:  pagination.TotalItems,
+			TotalPages:  pagination.TotalPages,
 		})
 	case http.StatusCreated: // Created ~> 201
 		g.C.JSON(httpCode, ResponsePostData{
@@ -42,7 +43,7 @@ func (g *Gin) Response(httpCode int, data interface{}) {
 		// 	break
 	}
 }
-func (g *Gin) ErrorResponse(httpCode int, name string, message string, details DetailValidation) {
+func (g *Gin) ErrorResponse(httpCode int, name string, message string, details []Detail) {
 	switch httpCode {
 	default: // Bad Request Validation ~> 400 | Not Found ~> 401 | Unprocessable Entity ~> 422
 		g.C.JSON(httpCode, ResponseErrorData{

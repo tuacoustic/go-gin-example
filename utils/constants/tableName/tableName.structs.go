@@ -1,5 +1,5 @@
 package tablename
 
-type TableNameStructs struct {
+type TableNameStruct struct {
 	Users string
 }

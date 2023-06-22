@@ -11,17 +11,18 @@ type Link struct {
 	Rel    string `json:"rel"`
 	Method string `json:"method"`
 }
-type DetailValidation struct {
-	Field       string `json:"field"`
-	Value       string `json:"value"`
-	Location    string `json:"location"`
-	Description string `json:"description"`
+type Detail struct {
+	Field       string      `json:"field"`
+	Value       interface{} `json:"value"`
+	Location    string      `json:"location"`
+	Description string      `json:"description"`
 }
 type ResponseGetListData struct {
-	Items      interface{} `json:"items"`
-	Links      []Link      `json:"links"`
-	TotalItems int32       `json:"total_items"`
-	TotalPages int32       `json:"total_pages"`
+	Items       interface{} `json:"items"`
+	Links       []Link      `json:"links"`
+	CurrentPage int         `json:"current_page"`
+	TotalItems  int         `json:"total_items"`
+	TotalPages  int         `json:"total_pages"`
 }
 
 type ResponsePostData struct {
@@ -30,14 +31,20 @@ type ResponsePostData struct {
 }
 
 type ResponseErrorData struct {
-	Name    string           `json:"name"`
-	Message string           `json:"message"`
-	DebugId string           `json:"debug_id"`
-	Details DetailValidation `json:"details"`
-	Links   []Link           `json:"links"`
+	Name    string   `json:"name"`
+	Message string   `json:"message"`
+	DebugId string   `json:"debug_id"`
+	Details []Detail `json:"details"`
+	Links   []Link   `json:"links"`
 }
 
 type ResponseUnauthorizedData struct {
 	Error            string `json:"error"`
 	ErrorDescription string `json:"error_description"`
+}
+
+type Pagination struct {
+	CurrentPage int `json:"current_page"`
+	TotalItems  int `json:"total_items"`
+	TotalPages  int `json:"total_pages"`
 }

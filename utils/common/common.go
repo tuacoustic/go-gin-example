@@ -21,3 +21,12 @@ func CamelToSnake(camelCase string) string {
 	}
 	return sb.String()
 }
+
+func CountInterface(input interface{}) int {
+	// Count as string
+	var count int
+	if arr, ok := input.(string); ok {
+		count = len(arr)
+	}
+	return count
+}
