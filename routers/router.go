@@ -8,6 +8,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	_ "github.com/tuacoustic/go-gin-example/docs"
+	"github.com/tuacoustic/go-gin-example/middlewares"
 	"github.com/tuacoustic/go-gin-example/packages/auth"
 	"github.com/tuacoustic/go-gin-example/packages/users"
 	"github.com/tuacoustic/go-gin-example/utils/validate"
@@ -33,16 +34,23 @@ func InitRouter() *gin.Engine {
 
 	// Interceptor
 	r.Use(validate.Validator)
-	apiv1 := r.Group("/api/v1")
+	commonUri := "/api/v1"
+	usersGroup := r.Group(commonUri)
+	authGroup := r.Group(commonUri)
+
+	// Authentication Middleware
+	authGroup.Use(middlewares.AuthMiddleware())
 	{
 		// User Routes
-		apiv1.POST("/users/register", users.Create)
-		apiv1.GET("/users/get-all", users.GetAll)
-		apiv1.PUT("/users/:id/update", users.Update)
-		apiv1.DELETE("users/:id/soft-delete", users.SoftDelete)
-
+		usersGroup.POST("/users/register", users.Create)
+		usersGroup.GET("/users/get-all", users.GetAll)
+		usersGroup.PUT("/users/:id/update", users.Update)
+		usersGroup.DELETE("/users/:id/soft-delete", users.SoftDelete)
+	}
+	{
 		// Auth Routes
-		apiv1.POST("/auth/login", auth.Login)
+		usersGroup.POST("/auth/login", auth.Login)
+		authGroup.GET("/auth/profile", auth.Profile)
 	}
 
 	// Swagger

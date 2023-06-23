@@ -8,7 +8,6 @@ import (
 )
 
 type UsersDto struct {
-	gorm.Model
 	Email     string    `form:"email" json:"email" xml:"email" binding:"required,gte=6,lte=255,email"`
 	Phone     string    `form:"phone" json:"phone" xml:"phone" binding:"required,gte=6,lte=30"`
 	Avatar    string    `form:"avatar" json:"avatar" xml:"avatar" binding:"required"`
@@ -18,7 +17,6 @@ type UsersDto struct {
 }
 
 type GetUsersDto struct {
-	gorm.Model
 	Id    uint64 `form:"id"`
 	Email string `form:"email" json:"email" xml:"email"`
 	Phone string `form:"phone" json:"phone" xml:"phone"`
@@ -27,7 +25,6 @@ type GetUsersDto struct {
 }
 
 type UpdateUserDto struct {
-	gorm.Model
 	Email    string `form:"email" json:"email" xml:"email" binding:"omitempty,gte=6,lte=255,email"`
 	Phone    string `form:"phone" json:"phone" xml:"phone" binding:"omitempty,gte=6,lte=30"`
 	Avatar   string `form:"avatar" json:"avatar" xml:"avatar"`

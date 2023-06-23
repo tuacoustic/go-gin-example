@@ -21,6 +21,13 @@ func UserError() CommonStruct {
 	}
 }
 
+func AuthError() CommonStruct {
+	return CommonStruct{
+		ErrorName: "AUTH_ERROR",
+		Message:   "Auth error.",
+	}
+}
+
 func DatabaseConnectionError() CommonStruct {
 	return CommonStruct{
 		ErrorName: "DATABASE_ERROR",

@@ -31,9 +31,16 @@ func Login(c *gin.Context) {
 		if err != nil {
 			var details []app.Detail
 			details = append(details, errorConstants.DatabaseHandlerError(err))
-			appG.ErrorResponse(http.StatusBadRequest, errorConstants.UserError().ErrorName, errorConstants.UserError().Message, details)
+			appG.ErrorResponse(http.StatusBadRequest, errorConstants.AuthError().ErrorName, errorConstants.AuthError().Message, details)
 			return
 		}
 		appG.Response(http.StatusOK, item, app.Pagination{})
 	}(repo)
+}
+
+func Profile(c *gin.Context) {
+	userId := c.MustGet("id").(float64)
+	c.JSON(200, gin.H{
+		"id": userId,
+	})
 }
