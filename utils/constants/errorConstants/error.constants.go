@@ -34,33 +34,38 @@ func CommonDetailError(field string, value interface{}, location string, descrip
 	}
 }
 
-func DuplicateError(err error) app.Detail {
+func DatabaseHandlerError(err error) app.Detail {
 	errorMessage := err.Error()
-	var duplicateResp app.Detail
+	var resultResp app.Detail
 	// Define the regular expression pattern
 	pattern := `Duplicate entry '([^']+)' for key '([^']+)'`
 
 	// Compile the regular expression
 	regex := regexp.MustCompile(pattern)
-
 	// Find submatches using the regular expression
 	matches := regex.FindStringSubmatch(errorMessage)
 
 	// Extract the desired parts
 	if len(matches) >= 3 {
-		duplicateResp = app.Detail{
+		resultResp = app.Detail{
 			Field:       matches[1],
 			Value:       matches[2],
 			Location:    CommonBodyLocationError(),
 			Description: regex.FindString(errorMessage),
 		}
+	} else {
+		resultResp = app.Detail{
+			Field:       "",
+			Value:       "",
+			Location:    CommonBodyLocationError(),
+			Description: errorMessage,
+		}
 	}
-	return duplicateResp
+	return resultResp
 }
 
 func NotNullJsonError() app.Detail {
-	var notNullJsonResp app.Detail
-	notNullJsonResp = app.Detail{
+	notNullJsonResp := app.Detail{
 		Field:       "",
 		Value:       "",
 		Location:    CommonBodyLocationError(),

@@ -39,6 +39,7 @@ func InitRouter() *gin.Engine {
 		apiv1.POST("/users/register", users.Create)
 		apiv1.GET("/users/get-all", users.GetAll)
 		apiv1.PUT("/users/:id/update", users.Update)
+		apiv1.DELETE("users/:id/soft-delete", users.SoftDelete)
 	}
 
 	// Swagger

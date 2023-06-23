@@ -1,6 +1,8 @@
 package users
 
 import (
+	"time"
+
 	"github.com/tuacoustic/go-gin-example/entities"
 	"github.com/tuacoustic/go-gin-example/repositories"
 	"github.com/tuacoustic/go-gin-example/utils/channel"
@@ -21,7 +23,7 @@ func (repo *repoUsersCRUD) Create(userInput UsersDto) (UsersDto, error) {
 	done := make(chan bool)
 	go func(ch chan<- bool) {
 		defer close(ch)
-		if err := repo.db.Debug().Table(tablename.TableName().Users).Create(&userInput).Error; err != nil {
+		if err = repo.db.Debug().Table(tablename.TableName().Users).Create(&userInput).Error; err != nil {
 			ch <- false
 			return
 		}
@@ -41,8 +43,8 @@ func (repo *repoUsersCRUD) GetAll(queryParams GetUsersDto) ([]entities.User, int
 
 	// Query from where
 	var queryUser = GetUsersDto{
-		Email: queryParams.Email,
-		Phone: queryParams.Phone,
+		Email: "%" + queryParams.Email + "%",
+		Phone: "%" + queryParams.Phone + "%",
 	}
 
 	// Query
@@ -52,17 +54,17 @@ func (repo *repoUsersCRUD) GetAll(queryParams GetUsersDto) ([]entities.User, int
 	go func(ch chan<- bool) {
 		defer close(ch)
 		// Execute the count query
-		if err := query.Debug().Count(&count).Error; err != nil {
+		if err = query.Debug().Count(&count).Error; err != nil {
 			ch <- false
 			return
 		}
-		paginatedQuery, err := repositories.Paginate(query, queryParams.Limit, queryParams.Page)
-		if err != nil {
+		paginatedQuery, getErr := repositories.Paginate(query, queryParams.Limit, queryParams.Page)
+		if getErr != nil {
 			ch <- false
 			return
 		}
 		// Execute the paginated query
-		if err := paginatedQuery.Debug().Find(&usersData).Error; err != nil {
+		if err = paginatedQuery.Debug().Find(&usersData).Error; err != nil {
 			ch <- false
 			return
 		}
@@ -80,19 +82,40 @@ func (repo *repoUsersCRUD) Update(userId string, userInput UpdateUserDto) (entit
 	done := make(chan bool)
 	go func(ch chan<- bool) {
 		defer close(ch)
-		if err := repo.db.Debug().Table(tablename.TableName().Users).Where("id = ?", userId).Updates(&userInput).Error; err != nil {
+		if err = repo.db.Debug().Table(tablename.TableName().Users).Where("id = ?", userId).Updates(&userInput).Error; err != nil {
 			ch <- false
 			return
 		}
-		if err := repo.db.Debug().Table(tablename.TableName().Users).First(&userData).Error; err != nil {
+		if err = repo.db.Debug().Table(tablename.TableName().Users).Where("id = ?", userId).First(&userData).Error; err != nil {
 			ch <- false
 			return
 		}
 		ch <- true
 	}(done)
 	if channel.OK(done) {
-		// userInput.Password = ""
 		return userData, nil
 	}
 	return entities.User{}, err
+}
+
+func (repo *repoUsersCRUD) SoftDelete(userId string) (bool, error) {
+	var err error
+	var userData entities.User
+	done := make(chan bool)
+	go func(ch chan<- bool) {
+		defer close(ch)
+		if err = repo.db.Debug().Table(tablename.TableName().Users).Where("id = ?", userId).First(&userData).Error; err != nil {
+			ch <- false
+			return
+		}
+		if err = repo.db.Debug().Table(tablename.TableName().Users).Where("id = ?", userId).Update("deleted_at", time.Now()).Error; err != nil {
+			ch <- false
+			return
+		}
+		ch <- true
+	}(done)
+	if channel.OK(done) {
+		return true, nil
+	}
+	return false, err
 }

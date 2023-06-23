@@ -1,6 +1,7 @@
 package users
 
 import (
+	"fmt"
 	"math"
 	"net/http"
 	"reflect"
@@ -44,8 +45,9 @@ func Create(c *gin.Context) {
 	func(userRepo UsersRepoIF) {
 		item, err := userRepo.Create(userInput)
 		if err != nil {
+			fmt.Print("Demo", err)
 			var details []app.Detail
-			details = append(details, errorConstants.DuplicateError(err))
+			details = append(details, errorConstants.DatabaseHandlerError(err))
 			appG.ErrorResponse(http.StatusBadRequest, errorConstants.UserError().ErrorName, errorConstants.UserError().Message, details)
 			return
 		}
@@ -108,7 +110,27 @@ func Update(c *gin.Context) {
 		item, err := userRepo.Update(userId, userInput)
 		if err != nil {
 			var details []app.Detail
-			details = append(details, errorConstants.DuplicateError(err))
+			details = append(details, errorConstants.DatabaseHandlerError(err))
+			appG.ErrorResponse(http.StatusBadRequest, errorConstants.UserError().ErrorName, errorConstants.UserError().Message, details)
+			return
+		}
+		appG.Response(http.StatusCreated, item, app.Pagination{})
+	}(repo)
+}
+
+func SoftDelete(c *gin.Context) {
+	userId := c.Param("id")
+	appG := app.Gin{C: c}
+	db, err := databases.MysqlConnect()
+	if err != nil {
+		return
+	}
+	repo := UsersRepo(db)
+	func(userRepo UsersRepoIF) {
+		item, err := userRepo.SoftDelete(userId)
+		if err != nil {
+			var details []app.Detail
+			details = append(details, errorConstants.DatabaseHandlerError(err))
 			appG.ErrorResponse(http.StatusBadRequest, errorConstants.UserError().ErrorName, errorConstants.UserError().Message, details)
 			return
 		}
