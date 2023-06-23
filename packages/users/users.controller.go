@@ -1,7 +1,6 @@
 package users
 
 import (
-	"fmt"
 	"math"
 	"net/http"
 	"reflect"
@@ -31,6 +30,7 @@ func Create(c *gin.Context) {
 	appG := app.Gin{C: c}
 	db, err := databases.MysqlConnect()
 	if err != nil {
+		appG.ErrorResponse(http.StatusInternalServerError, errorConstants.DatabaseConnectionError().ErrorName, errorConstants.DatabaseConnectionError().Message, []app.Detail{})
 		return
 	}
 	repo := UsersRepo(db)
@@ -45,7 +45,6 @@ func Create(c *gin.Context) {
 	func(userRepo UsersRepoIF) {
 		item, err := userRepo.Create(userInput)
 		if err != nil {
-			fmt.Print("Demo", err)
 			var details []app.Detail
 			details = append(details, errorConstants.DatabaseHandlerError(err))
 			appG.ErrorResponse(http.StatusBadRequest, errorConstants.UserError().ErrorName, errorConstants.UserError().Message, details)
@@ -59,6 +58,7 @@ func GetAll(c *gin.Context) {
 	appG := app.Gin{C: c}
 	db, err := databases.MysqlConnect()
 	if err != nil {
+		appG.ErrorResponse(http.StatusInternalServerError, errorConstants.DatabaseConnectionError().ErrorName, errorConstants.DatabaseConnectionError().Message, []app.Detail{})
 		return
 	}
 	repo := UsersRepo(db)
@@ -91,6 +91,7 @@ func Update(c *gin.Context) {
 	appG := app.Gin{C: c}
 	db, err := databases.MysqlConnect()
 	if err != nil {
+		appG.ErrorResponse(http.StatusInternalServerError, errorConstants.DatabaseConnectionError().ErrorName, errorConstants.DatabaseConnectionError().Message, []app.Detail{})
 		return
 	}
 	repo := UsersRepo(db)
@@ -111,7 +112,7 @@ func Update(c *gin.Context) {
 		if err != nil {
 			var details []app.Detail
 			details = append(details, errorConstants.DatabaseHandlerError(err))
-			appG.ErrorResponse(http.StatusBadRequest, errorConstants.UserError().ErrorName, errorConstants.UserError().Message, details)
+			appG.ErrorResponse(http.StatusNotAcceptable, errorConstants.UserError().ErrorName, errorConstants.UserError().Message, details)
 			return
 		}
 		appG.Response(http.StatusCreated, item, app.Pagination{})
@@ -123,6 +124,7 @@ func SoftDelete(c *gin.Context) {
 	appG := app.Gin{C: c}
 	db, err := databases.MysqlConnect()
 	if err != nil {
+		appG.ErrorResponse(http.StatusInternalServerError, errorConstants.DatabaseConnectionError().ErrorName, errorConstants.DatabaseConnectionError().Message, []app.Detail{})
 		return
 	}
 	repo := UsersRepo(db)

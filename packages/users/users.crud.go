@@ -1,8 +1,6 @@
 package users
 
 import (
-	"time"
-
 	"github.com/tuacoustic/go-gin-example/entities"
 	"github.com/tuacoustic/go-gin-example/repositories"
 	"github.com/tuacoustic/go-gin-example/utils/channel"
@@ -42,13 +40,21 @@ func (repo *repoUsersCRUD) GetAll(queryParams GetUsersDto) ([]entities.User, int
 	var count int64
 
 	// Query from where
-	var queryUser = GetUsersDto{
+	queryUser := GetUsersDto{
+		Id: queryParams.Id,
+	}
+
+	// Query from like
+	queryUserLike := GetUsersDto{
 		Email: "%" + queryParams.Email + "%",
 		Phone: "%" + queryParams.Phone + "%",
 	}
 
 	// Query
-	query := repo.db.Table(tablename.TableName().Users).Where(&queryUser).Order("created_at desc")
+	query := repo.db.Table(tablename.TableName().Users).
+		Where("email LIKE ? and phone LIKE ?", queryUserLike.Email, queryUserLike.Phone).
+		Where(&queryUser).
+		Order("created_at desc")
 
 	done := make(chan bool)
 	go func(ch chan<- bool) {
@@ -100,15 +106,15 @@ func (repo *repoUsersCRUD) Update(userId string, userInput UpdateUserDto) (entit
 
 func (repo *repoUsersCRUD) SoftDelete(userId string) (bool, error) {
 	var err error
-	var userData entities.User
+	var user entities.User
 	done := make(chan bool)
 	go func(ch chan<- bool) {
 		defer close(ch)
-		if err = repo.db.Debug().Table(tablename.TableName().Users).Where("id = ?", userId).First(&userData).Error; err != nil {
+		if err = repo.db.Debug().Table(tablename.TableName().Users).Where("id = ?", userId).First(&user).Error; err != nil {
 			ch <- false
 			return
 		}
-		if err = repo.db.Debug().Table(tablename.TableName().Users).Where("id = ?", userId).Update("deleted_at", time.Now()).Error; err != nil {
+		if err = repo.db.Delete(&user).Error; err != nil {
 			ch <- false
 			return
 		}

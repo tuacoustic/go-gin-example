@@ -3,6 +3,7 @@ package users
 import (
 	"time"
 
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -18,6 +19,7 @@ type UsersDto struct {
 
 type GetUsersDto struct {
 	gorm.Model
+	Id    uint64 `form:"id"`
 	Email string `form:"email" json:"email" xml:"email"`
 	Phone string `form:"phone" json:"phone" xml:"phone"`
 	Limit int    `form:"limit"` // Query Only
@@ -30,4 +32,24 @@ type UpdateUserDto struct {
 	Phone    string `form:"phone" json:"phone" xml:"phone" binding:"omitempty,gte=6,lte=30"`
 	Avatar   string `form:"avatar" json:"avatar" xml:"avatar"`
 	Password string `form:"password" json:"password" xml:"password" binding:"omitempty,gte=6,lte=16"`
+}
+
+func (u *UsersDto) BeforeSave(tx *gorm.DB) error {
+	return hashPassword(&u.Password)
+}
+
+func (u *UpdateUserDto) BeforeSave(tx *gorm.DB) error {
+	if u.Password != "" {
+		return hashPassword(&u.Password)
+	}
+	return nil
+}
+
+func hashPassword(password *string) error {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	*password = string(hashedPassword)
+	return nil
 }

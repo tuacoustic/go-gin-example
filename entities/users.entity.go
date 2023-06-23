@@ -26,7 +26,6 @@ type User struct {
 	DeletedAt gorm.DeletedAt `json:"deleted_at"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
-	Count     int            `json:"-"`
 }
 
 type CountUsers struct {

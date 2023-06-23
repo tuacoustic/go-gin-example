@@ -21,6 +21,13 @@ func UserError() CommonStruct {
 	}
 }
 
+func DatabaseConnectionError() CommonStruct {
+	return CommonStruct{
+		ErrorName: "DATABASE_ERROR",
+		Message:   "No connection could be made because the target machine actively refused it.",
+	}
+}
+
 func CommonBodyLocationError() string {
 	return "body"
 }

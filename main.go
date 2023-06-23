@@ -32,13 +32,15 @@ func init() {
 //	@license.name	Apache 2.0
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-//	@host		localhost:3030
-//	@BasePath	/api/v1
+// @host		localhost:3030
+// @BasePath	/api/v1
 func main() {
 	// Auto generate model schema
 	status := databases.MysqlAuto()
 	if status == true {
-		console.Info("Connected to Mysql Successful")
+		console.Info("Connected to Mysql Successfully")
+	} else {
+		console.Info("Connected to Mysql Failed")
 	}
 	gin.SetMode(setting.ServerSetting.RunMode)
 

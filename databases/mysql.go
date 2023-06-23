@@ -2,7 +2,6 @@ package databases
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/tuacoustic/go-gin-example/entities"
 	"github.com/tuacoustic/go-gin-example/utils/setting"
@@ -22,7 +21,8 @@ func MysqlConnect() (*gorm.DB, error) {
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
-		log.Fatalf("models.Setup err: %v", err)
+		// log.Fatalf("models.Setup err: %v", err)
+		return nil, err
 	}
 
 	// defer func() {
@@ -38,12 +38,14 @@ func MysqlConnect() (*gorm.DB, error) {
 func MysqlAuto() bool {
 	db, err := MysqlConnect()
 	if err != nil {
-		log.Fatal(err)
+		// log.Fatal(err)
+		return false
 	}
 
 	err = db.AutoMigrate(&entities.User{})
 	if err != nil {
-		log.Fatal(err)
+		// log.Fatal(err)
+		return false
 	}
 
 	return true

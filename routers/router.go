@@ -8,14 +8,14 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	_ "github.com/tuacoustic/go-gin-example/docs"
+	"github.com/tuacoustic/go-gin-example/packages/auth"
 	"github.com/tuacoustic/go-gin-example/packages/users"
 	"github.com/tuacoustic/go-gin-example/utils/validate"
 )
 
 func HomePage(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"status": http.StatusOK,
-		"data": []map[string]string{
+		"items": []map[string]string{
 			{
 				"version_number": "v1.0.1",
 			},
@@ -40,6 +40,9 @@ func InitRouter() *gin.Engine {
 		apiv1.GET("/users/get-all", users.GetAll)
 		apiv1.PUT("/users/:id/update", users.Update)
 		apiv1.DELETE("users/:id/soft-delete", users.SoftDelete)
+
+		// Auth Routes
+		apiv1.POST("/auth/login", auth.Login)
 	}
 
 	// Swagger
