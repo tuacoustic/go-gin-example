@@ -2,7 +2,7 @@ package app
 
 import "net/http"
 
-func (g *Gin) Response(httpCode int, data interface{}, pagination Pagination) {
+func (g *Gin) Response(httpCode int, data []interface{}, pagination Pagination) {
 	switch httpCode {
 	case http.StatusOK: // Get List ~> 200
 		g.C.JSON(httpCode, ResponseGetListData{

@@ -8,13 +8,19 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/tuacoustic/go-gin-example/databases"
+	"github.com/tuacoustic/go-gin-example/entities"
+	"github.com/tuacoustic/go-gin-example/utils/channel"
 	"github.com/tuacoustic/go-gin-example/utils/constants/commonConstants"
+	"github.com/tuacoustic/go-gin-example/utils/constants/errorConstants"
+	tablename "github.com/tuacoustic/go-gin-example/utils/constants/tableName"
 	"github.com/tuacoustic/go-gin-example/utils/setting"
 )
 
-func GenerateToken(userId uint64) (string, error) {
+func GenerateToken(uuid uuid.UUID) (string, error) {
 	payload := jwt.MapClaims{
-		"id":  userId,
+		"sub": uuid,
 		"exp": commonConstants.JwtConstants().Exp,
 	}
 
@@ -48,6 +54,7 @@ func VerifyToken(tokenString string) (jwt.MapClaims, error) {
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
+		var userData entities.User
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
 			c.Abort()
@@ -61,7 +68,28 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		c.Set("id", claims["id"])
-		c.Next()
+		userUUID := claims["sub"]
+		db, err := databases.MysqlConnect()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": errorConstants.DatabaseConnectionError().Message})
+			c.Abort()
+			return
+		}
+		done := make(chan bool)
+		go func(ch chan<- bool) {
+			defer close(ch)
+			if err = db.Debug().Table(tablename.TableName().Users).Where("uuid = ?", userUUID).First(&userData).Error; err != nil {
+				ch <- false
+				return
+			}
+			ch <- true
+		}(done)
+		if channel.OK(done) {
+			c.Set("user", userData)
+			c.Next()
+			return
+		}
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization failed"})
+		c.Abort()
 	}
 }

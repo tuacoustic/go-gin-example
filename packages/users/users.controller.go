@@ -50,7 +50,7 @@ func Create(c *gin.Context) {
 			appG.ErrorResponse(http.StatusBadRequest, errorConstants.UserError().ErrorName, errorConstants.UserError().Message, details)
 			return
 		}
-		appG.Response(http.StatusCreated, item, app.Pagination{})
+		appG.Response(http.StatusCreated, []interface{}{item}, app.Pagination{})
 	}(repo)
 }
 
@@ -83,7 +83,7 @@ func GetAll(c *gin.Context) {
 			TotalItems:  count,
 			TotalPages:  int(totalPages),
 		}
-		appG.Response(http.StatusOK, items, pagination)
+		appG.Response(http.StatusOK, []interface{}{items}, pagination)
 	}(repo)
 }
 func Update(c *gin.Context) {
@@ -115,7 +115,7 @@ func Update(c *gin.Context) {
 			appG.ErrorResponse(http.StatusNotAcceptable, errorConstants.UserError().ErrorName, errorConstants.UserError().Message, details)
 			return
 		}
-		appG.Response(http.StatusCreated, item, app.Pagination{})
+		appG.Response(http.StatusCreated, []interface{}{item}, app.Pagination{})
 	}(repo)
 }
 
@@ -136,6 +136,6 @@ func SoftDelete(c *gin.Context) {
 			appG.ErrorResponse(http.StatusBadRequest, errorConstants.UserError().ErrorName, errorConstants.UserError().Message, details)
 			return
 		}
-		appG.Response(http.StatusCreated, item, app.Pagination{})
+		appG.Response(http.StatusCreated, []interface{}{item}, app.Pagination{})
 	}(repo)
 }

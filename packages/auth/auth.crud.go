@@ -43,7 +43,7 @@ func (repo *repoAuthCRUD) Login(userInput AuthDto) (AuthResponseDto, error) {
 		}
 
 		// Generate Token
-		token, err := middlewares.GenerateToken(userData.Id)
+		token, err := middlewares.GenerateToken(userData.UUID)
 		if err != nil {
 			return AuthResponseDto{}, err
 		}

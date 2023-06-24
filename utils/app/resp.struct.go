@@ -18,16 +18,16 @@ type Detail struct {
 	Description string      `json:"description"`
 }
 type ResponseGetListData struct {
-	Items       interface{} `json:"items"`
-	Links       []Link      `json:"links"`
-	CurrentPage int         `json:"current_page"`
-	TotalItems  int         `json:"total_items"`
-	TotalPages  int         `json:"total_pages"`
+	Items       []interface{} `json:"items"`
+	Links       []Link        `json:"links"`
+	CurrentPage int           `json:"current_page"`
+	TotalItems  int           `json:"total_items"`
+	TotalPages  int           `json:"total_pages"`
 }
 
 type ResponsePostData struct {
-	Items interface{} `json:"items"`
-	Links []Link      `json:"links"`
+	Items []interface{} `json:"items"`
+	Links []Link        `json:"links"`
 }
 
 type ResponseErrorData struct {

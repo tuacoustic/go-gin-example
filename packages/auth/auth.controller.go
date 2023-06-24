@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tuacoustic/go-gin-example/databases"
+	"github.com/tuacoustic/go-gin-example/entities"
 	"github.com/tuacoustic/go-gin-example/utils/app"
 	"github.com/tuacoustic/go-gin-example/utils/constants/errorConstants"
 	"github.com/tuacoustic/go-gin-example/utils/validate"
@@ -34,13 +35,12 @@ func Login(c *gin.Context) {
 			appG.ErrorResponse(http.StatusBadRequest, errorConstants.AuthError().ErrorName, errorConstants.AuthError().Message, details)
 			return
 		}
-		appG.Response(http.StatusOK, item, app.Pagination{})
+		appG.Response(http.StatusOK, []interface{}{item}, app.Pagination{})
 	}(repo)
 }
 
 func Profile(c *gin.Context) {
-	userId := c.MustGet("id").(float64)
-	c.JSON(200, gin.H{
-		"id": userId,
-	})
+	appG := app.Gin{C: c}
+	item := c.MustGet("user").(entities.User)
+	appG.Response(http.StatusOK, []interface{}{item}, app.Pagination{})
 }
