@@ -42,7 +42,7 @@ func MysqlAuto() bool {
 		return false
 	}
 
-	err = db.AutoMigrate(&entities.User{})
+	err = db.AutoMigrate(&entities.User{}, &entities.YoutubeTranscripts{})
 	if err != nil {
 		// log.Fatal(err)
 		return false
