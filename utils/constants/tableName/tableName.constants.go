@@ -2,6 +2,7 @@ package tablename
 
 func TableName() TableNameStruct {
 	return TableNameStruct{
-		Users: "users",
+		Users:              "users",
+		YoutubeTranscripts: "youtube_transcripts",
 	}
 }

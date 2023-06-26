@@ -1,5 +1,6 @@
 package tablename
 
 type TableNameStruct struct {
-	Users string
+	Users              string
+	YoutubeTranscripts string
 }

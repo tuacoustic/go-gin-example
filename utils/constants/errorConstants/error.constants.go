@@ -28,6 +28,13 @@ func AuthError() CommonStruct {
 	}
 }
 
+func YtbTransError() CommonStruct {
+	return CommonStruct{
+		ErrorName: "YOUTUBE_TRANSCRIPT_ERROR",
+		Message:   "Youtube transcript error.",
+	}
+}
+
 func DatabaseConnectionError() CommonStruct {
 	return CommonStruct{
 		ErrorName: "DATABASE_ERROR",

@@ -11,6 +11,7 @@ import (
 	"github.com/tuacoustic/go-gin-example/middlewares"
 	"github.com/tuacoustic/go-gin-example/packages/auth"
 	"github.com/tuacoustic/go-gin-example/packages/users"
+	youtubetranscripts "github.com/tuacoustic/go-gin-example/packages/youtubeTranscripts"
 	"github.com/tuacoustic/go-gin-example/utils/validate"
 )
 
@@ -37,9 +38,10 @@ func InitRouter() *gin.Engine {
 	commonUri := "/api/v1"
 	usersGroup := r.Group(commonUri)
 	authGroup := r.Group(commonUri)
-
+	youtubeTranscriptsGroup := r.Group(commonUri)
 	// Authentication Middleware
 	authGroup.Use(middlewares.AuthMiddleware())
+	youtubeTranscriptsGroup.Use(middlewares.AuthMiddleware())
 	{
 		// User Routes
 		usersGroup.POST("/users/register", users.Create)
@@ -51,6 +53,11 @@ func InitRouter() *gin.Engine {
 		// Auth Routes
 		usersGroup.POST("/auth/login", auth.Login)
 		authGroup.GET("/auth/profile", auth.Profile)
+	}
+	{
+		// Youtube Transcript Routes
+		youtubeTranscriptsGroup.POST("/youtube/transcripts/create", youtubetranscripts.Create)
+		youtubeTranscriptsGroup.GET("/youtube/transcripts/get-detail", youtubetranscripts.GetDetail)
 	}
 
 	// Swagger

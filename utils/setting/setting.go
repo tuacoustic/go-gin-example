@@ -26,6 +26,8 @@ type App struct {
 	LogSaveName string
 	LogFileExt  string
 	TimeFormat  string
+	CryptoKey   string
+	PythonUrl   string
 }
 
 var AppSetting = &App{}
