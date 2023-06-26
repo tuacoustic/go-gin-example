@@ -24,5 +24,15 @@ hot-reload:
 
 .PHONY: hot-reload-win
 hot-reload-win:
-	@echo "[$(ALERT)] - make hot-reload -> $(GREEN)$(PROJECT_NAME)$(RESET)"
+	@echo "[$(ALERT)] - make hot-reload-win -> $(GREEN)$(PROJECT_NAME)$(RESET)"
 	@./bin/air.exe
+
+.PHONY: install-grpc
+install-grpc:
+	@echo "[$(ALERT)] - make install-grpc -> $(GREEN)$(PROJECT_NAME)$(RESET)"
+	@go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28 google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
+
+.PHONY: export-protoc
+export-protoc:
+	@echo "[$(ALERT)] - make export-protoc -> $(GREEN)$(PROJECT_NAME)$(RESET)"
+	@export PATH="$PATH:$(go env GOPATH)/bin"
